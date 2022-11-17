@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import express from 'express';
 import errorMiddleware from './middlewares/ErrorMiddleware';
+import carRouter from './Routes/carRouter';
 
 // import 'express-async-errors';
 
@@ -9,40 +10,19 @@ class App {
 
   constructor() {
     this.app = express();
-
-    this.config();
-    this.routes();
+    this.app.use(express.json());
+    this.app.use(carRouter);
+    // Rota de Erro!
+    this.app.use(errorMiddleware);
 
     // Não remover essa rota
     this.app.get('/', (req, res) => res.json({ ok: true }));
   }
-
-  private config(): void {
-    const accessControl: express.RequestHandler = (_req, res, next) => {
-      res.header('Access-Control-Allow-Origin', '*');
-      res.header(
-        'Access-Control-Allow-Methods',
-        'GET,POST,DELETE,OPTIONS,PUT,PATCH',
-      );
-      res.header('Access-Control-Allow-Headers', '*');
-      next();
-    };
-
-    this.app.use(express.json());
-    this.app.use(accessControl);
-  }
-
-  private routes(): void {
-    // Rota de Erro!
-    this.app.use(errorMiddleware);
-  }
-
-  public start(PORT: string | number): void {
-    this.app.listen(PORT, () => console.log(`Running on port ${PORT}`));
-  }
 }
 
-export default App;
+export { App };
 
 // A execução dos testes de cobertura depende dessa exportação
-export const { app } = new App();
+const { app } = new App();
+
+export default app;

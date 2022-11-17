@@ -1,9 +1,10 @@
+/* eslint-disable no-console */
 import 'dotenv/config';
 import App from './app';
 import connectToDatabase from './Models/Connection';
 
 const PORT = process.env.PORT || 3001;
-const app = new App()
+const app = new App();
 connectToDatabase()
   .then(() => {
     app.start(PORT);

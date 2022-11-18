@@ -148,7 +148,7 @@ describe('---------------------- Rota Cars ----------------------', function () 
         sinon.restore();
 
         sinon
-          .stub(mongoose.Model, 'findOne')
+          .stub(mongoose.Model, 'findOneAndUpdate')
           .resolves(null);
         sinon
           .stub(mongoose, 'isValidObjectId')
@@ -184,7 +184,7 @@ describe('---------------------- Rota Cars ----------------------', function () 
           .put('/cars/VALID_MONGO_ID')
           .send(validCar);
           
-        expect(status).to.equal(201);
+        expect(status).to.equal(200);
         expect(body).to.deep.equal(updateCar);
 
         sinon.restore();

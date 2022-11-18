@@ -25,6 +25,12 @@ class CarService {
     if (car) return new Car(car);
     throw new HttpError('Car not found', 404);
   }
+
+  public async update(id: string, data: ICar) {
+    const car = await this.carODM.update(id, data);
+    if (car) return new Car(car);
+    throw new HttpError('Car not found', 404);
+  }
 }
 
 export default CarService;

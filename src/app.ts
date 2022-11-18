@@ -2,6 +2,7 @@
 import express from 'express';
 import errorMiddleware from './middlewares/ErrorMiddleware';
 import carRouter from './Routes/carRouter';
+import motorcycleRouter from './Routes/motorcycleRouter';
 
 // import 'express-async-errors';
 
@@ -11,6 +12,7 @@ class App {
   constructor() {
     this.app = express();
     this.app.use(express.json());
+    this.app.use(motorcycleRouter);
     this.app.use(carRouter);
     // Rota de Erro!
     this.app.use(errorMiddleware);

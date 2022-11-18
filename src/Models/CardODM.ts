@@ -14,7 +14,7 @@ class CarODM extends AbstractODM<ICar> {
       doorsQty: { type: Number, required: true },
       seatsQty: { type: Number, required: true },
     });
-    super(schema, 'Car');
+    super(schema, 'Cars');
   }
 
   public async findAll(): Promise<ICar[]> {
@@ -23,7 +23,9 @@ class CarODM extends AbstractODM<ICar> {
 
   public async findById(_id: string): Promise<ICar | null> {
     if (!isValidObjectId(_id)) throw new HttpError('Invalid mongo id', 422);
-    return this.model.findOne({ _id });
+    const car = await this.model.findOne({ _id });
+
+    return car;
   }
 }
 

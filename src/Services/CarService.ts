@@ -22,7 +22,7 @@ class CarService {
 
   public async findById(id: string) {
     const car = await this.carODM.findById(id);
-    if (car) return car;
+    if (car) return new Car(car);
     throw new HttpError('Car not found', 404);
   }
 }

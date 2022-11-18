@@ -2,11 +2,11 @@ import sinon from 'sinon';
 import chai from 'chai';
 import request from 'supertest';
 
-import { Model } from 'mongoose';
+import mongoose from 'mongoose';
 
 import app from '../../src/app';
 import Car from '../../src/Domains/Car';
-import { validCar } from '../../__tests__/utils/CarsMock';
+import { carsArray, validCar } from '../../__tests__/utils/CarsMock';
 
 const { expect } = chai;
 
@@ -20,7 +20,7 @@ describe('---------------------- Rota Cars ----------------------', function () 
         });
 
         sinon
-          .stub(Model, 'create')
+          .stub(mongoose.Model, 'create')
           .resolves(newCar);
           
         const { body, status } = await request(app)
@@ -29,6 +29,93 @@ describe('---------------------- Rota Cars ----------------------', function () 
           
         expect(status).to.equal(201);
         expect(body).to.deep.equal(newCar);
+
+        sinon.restore();
+      });
+    });
+  });
+  describe('2 - GET /Cars', function () {
+    describe('Casos de sucessos ✅', function () {
+      it('Busca todos os carros cadastrados.', async function () {
+        const newCar = carsArray.map((car) => new Car({ id: 'VALID_MONGO_ID', ...car }));
+
+        sinon
+          .stub(mongoose.Model, 'find')
+          .resolves(newCar);
+          
+        const { body, status } = await request(app)
+          .get('/cars');
+          
+        expect(status).to.equal(200);
+        expect(body).to.deep.equal(newCar);
+
+        sinon.restore();
+      });
+    });
+  });
+  describe('3 - GET /Cars:id', function () {
+    describe('Casos de Erro ❌.', function () {
+      it('Caso o id seja invalido!', async function () {
+        sinon.restore();
+
+        sinon
+          .stub(mongoose.Model, 'findOne')
+          .resolves(null);
+
+        sinon
+          .stub(mongoose, 'isValidObjectId')
+          .returns(false);
+          
+        const { body, status } = await request(app)
+          .get('/cars/INVALID_MONGO_ID');
+          
+        expect(status).to.equal(422);
+        expect(body).to.deep.equal({ message: 'Invalid mongo id' });
+
+        sinon.restore();
+      });
+      it('Caso id não exista!', async function () {
+        sinon.restore();
+
+        sinon
+          .stub(mongoose.Model, 'findOne')
+          .resolves(null);
+        sinon
+          .stub(mongoose, 'isValidObjectId')
+          .returns(true);
+          
+        const { body, status } = await request(app)
+          .get('/cars/VALID_MONGO_ID');
+          
+        expect(status).to.equal(404);
+        expect(body).to.deep.equal({ message: 'Car not found' });
+
+        sinon.restore();
+      });
+    });
+    describe('Casos de sucessos ✅', function () {
+      it('Busca um carro por id.', async function () {
+        const newCar = new Car({
+          id: '6348513f34c397abcad040b2',
+          ...validCar,
+        });
+
+        sinon.restore();
+
+        sinon
+          .stub(mongoose.Model, 'findOne')
+          .resolves(newCar);
+        sinon
+          .stub(mongoose, 'isValidObjectId')
+          .returns(true);
+          
+        const { body, status } = await request(app)
+          .get('/cars/VALID_MONGO_ID');
+          
+        expect(status).to.equal(200);
+        expect(body).to.deep.equal(newCar);
+
+        sinon.restore();
       });
     });
   });
